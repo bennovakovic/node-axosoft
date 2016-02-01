@@ -1,0 +1,23 @@
+{
+  "name": "nodaxosoft",
+  "version": "0.0.0",
+  "description": "A small app to track time in axosoft",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bennovakovic/node-axosoft.git"
+  },
+  "keywords": [
+    "axosoft",
+    "time tracking"
+  ],
+  "author": "Ben Novakovic <bmn@bmn.name> (http://bmn.name)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bennovakovic/node-axosoft/issues"
+  },
+  "homepage": "https://github.com/bennovakovic/node-axosoft#readme"
+}
