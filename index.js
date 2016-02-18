@@ -1,6 +1,5 @@
 var readLine = require('./lib/read_line');
 var CmdProcessor = require('./lib/cmd_processor');
-var cmdlist = require('./cmds');
 
 var axoItems = require('./axo/items');
 
