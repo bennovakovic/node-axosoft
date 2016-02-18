@@ -19,5 +19,12 @@
   "bugs": {
     "url": "https://github.com/bennovakovic/node-axosoft/issues"
   },
-  "homepage": "https://github.com/bennovakovic/node-axosoft#readme"
+  "homepage": "https://github.com/bennovakovic/node-axosoft#readme",
+  "devDependencies": {
+    "cli-spinner": "^0.2.2",
+    "request": "^2.69.0"
+  },
+  "dependencies": {
+    "node-notifier": "^4.4.0"
+  }
 }
