@@ -4,7 +4,7 @@
   "description": "A small app to track time in axosoft",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "start": "NODE_PATH=. node index.js"
   },
   "repository": {
     "type": "git",

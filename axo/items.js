@@ -1,8 +1,10 @@
 var fs = require('fs');
 var request = require('./request');
 var notifier = require('node-notifier');
-module.exports = (function() {
+var settings = require('../settings');
 
+module.exports = (function() {
+  var nc = new notifier.NotificationCenter();
   var resourceBase = '/items';
   var readline = null;
   var me = null;
@@ -19,37 +21,35 @@ module.exports = (function() {
       if(handlers[cmd]) {
         handlers[cmd].apply(this, args);
       }
-      // if(action === 'find') {
-      //   request.get(resourceBase, {
-      //     search_string : query
-      //   }, function(data) {
-      //     console.log('yo.')
-      //   })
-      // }
-      // console.log('>>>', str, again);
-      // console.log(arguments);
     }
   };
 
   var displayNotification = function(title, message) {
-    var nc = new notifier.NotificationCenter();
+
 
     nc.notify({
       'title': title,
       'message': message,
-      'sound': 'Glass', // case sensitive
-      'appIcon': __dirname + '/coulson.jpg',
-      'contentImage': __dirname + '/coulson.jpg',
-      'open': 'file://' + __dirname + '/coulson.jpg',
+      'sound': false, // case sensitive
+      'icon': __dirname + '/../axo-icon.png',
       'wait' : true
+    }, function(err, response) {
+      // console.log('????', err, response);
     });
+
+    // nc.on('click', function (notifierObject, options) {
+    //   // Triggers if `wait: true` and user clicks notification
+    //   console.log('we clicked it!');
+    // });
   };
 
   var getMe = function(callback) {
     if(!me) {
-      request.get('/me', {}, function(data) {
-        me = data.data;
-        callback(null, me);
+      request.get('/me', {}, function(err, data) {
+        if(!err) {
+          me = data.data;
+          callback(null, me);
+        }
       })
     }
     else {
@@ -58,9 +58,20 @@ module.exports = (function() {
   }
 
   var getFeature = function(id, callback) {
-    request.get('/features/' + id, {}, function(data) {
-      callback(data.data);
+    request.get('/features/' + id, {}, function(err, data) {
+      callback(err, data.data);
     })
+    // request.get('/workflows', {}, function(response) {
+    //   console.log(response.data[1].workflow_steps);
+    // })
+  };
+  var getBug = function(id, callback) {
+    request.get('/defects/' + id, {}, function(err, data) {
+      callback(err, data.data);
+    })
+    // request.get('/workflows', {}, function(response) {
+    //   console.log(response.data[1].workflow_steps);
+    // })
   };
 
   var getDateInFormat = function(d) {
@@ -108,6 +119,11 @@ module.exports = (function() {
       timeWorked = Math.round(((timeWorked / 60) * 100)) / 100;
     }
 
+    var remainingTime = remaining - timeWorked;
+    if(remainingTime < 0) {
+      remainingTime = 0;
+    }
+
     var logObj = {
       user : {
         id : me.id
@@ -125,14 +141,14 @@ module.exports = (function() {
       description : message,
       date_time : getDateInFormat(),
       remaining_time : {
-        duration : remaining - timeWorked,
+        duration : remainingTime,
         time_unit : {
           id : currentTicket.remaining_duration.time_unit.id
         }
       }
 
     };
-    request.postJSON('/work_logs', logObj, function(data) {
+    request.postJSON('/work_logs', logObj, function(err, data) {
       callback(data);
     })
   };
@@ -140,21 +156,49 @@ module.exports = (function() {
 
 
   var handleWorkOnFeature = function(id) {
+    if(currentTicket) {
+      console.log('You are already working on a ticket, /finish on that first.');
+      readline.prompt();
+      return
+    }
     getMe(function(err, data) {
-      getFeature(id, function(data) {
+      getFeature(id, function(err, data) {
         currentTicket = data;
         startTime = Math.round((new Date()).getTime() / 1000);
         console.log('#################');
-        console.log('Requested Ticket:');
+        console.log('Requested Feature:');
         console.log('#' + currentTicket.id + ' ' + currentTicket.name);
         console.log('#################');
         console.log('Now logging time...');
         displayNotification('Working on #' + currentTicket.id, currentTicket.name);
-        readline.setPrompt('#' + currentTicket.id + ' > ');
+        readline.setPrompt('Feature #' + currentTicket.id + ' > ');
         readline.prompt();
       })
     })
   };
+
+  var handleWorkOnBug = function(id) {
+    if(currentTicket) {
+      console.log('You are already working on a ticket, /finish on that first.');
+      readline.prompt();
+      return
+    }
+    getMe(function(err, data) {
+      getBug(id, function(err, data) {
+        currentTicket = data;
+        startTime = Math.round((new Date()).getTime() / 1000);
+        console.log('#################');
+        console.log('Requested Bug:');
+        console.log('#' + currentTicket.id + ' ' + currentTicket.name);
+        console.log('#################');
+        console.log('Now logging time...');
+        displayNotification('Working on #' + currentTicket.id, currentTicket.name);
+        readline.setPrompt('Bug #' + currentTicket.id + ' > ');
+        readline.prompt();
+      })
+    })
+  };
+
   var handleLog = function(description, callback) {
 
     var description = Array.prototype.slice.call(arguments);
@@ -191,7 +235,12 @@ module.exports = (function() {
       readline.prompt();
       return;
     }
-    handleLog('Finished #' + currentTicket.id, function() {
+    var description = Array.prototype.slice.call(arguments);
+    var message = 'No description provided for worklog.';
+    if(description.length > 0){
+      message = description.join(' ');
+    }
+    handleLog(message, function() {
       console.log('#################');
       console.log('Finished working on #' + currentTicket.id);
       console.log('#################');
@@ -216,13 +265,17 @@ module.exports = (function() {
   };
 
   var handleStart = function() {
-
+    var description = Array.prototype.slice.call(arguments);
+    if(description.length > 0){
+      console.log(description, description.join(' '));
+    }
   };
 
   var handlers = {
     '/f' : handleWorkOnFeature.bind(this),
+    '/b' : handleWorkOnBug.bind(this),
     '/timer' : handleTimerRequest.bind(this),
-    // '/start' : handleStart.bind(this),
+    '/start' : handleStart.bind(this),
     '/finish' : handleFinish.bind(this),
     '/log' : handleLog.bind(this),
   };
