@@ -17,7 +17,7 @@ module.exports = (function() {
 
 
   var handlers = {
-    '/goat' : function() {
+    '/test' : function() {
       console.log(settings);
       readline.prompt();
     }

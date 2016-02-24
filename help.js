@@ -16,6 +16,13 @@ module.exports = (function() {
 
   var handleHelp = function() {
     console.log('Press <tab> to see options.');
+    console.log('---------------------------');
+    console.log('');
+    console.log('/f to start working on a feature ticket');
+    console.log('/b to start working on a bug ticket');
+    console.log('/finish to stop work on a bug/ticket');
+    console.log('/log to send the current time with a worklog');
+    console.log('/timer to see how long you have spent on the current ticket (unlogged)');
     readline.prompt();
   };
 

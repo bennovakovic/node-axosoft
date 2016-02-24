@@ -8,7 +8,7 @@ var axoItems = require('./axo/items');
 
 var help = require('./help');
 
-var axoTest = require('./axo/test');
+// var axoTest = require('./axo/test');
 
 
 // main app
@@ -21,6 +21,6 @@ var axoTest = require('./axo/test');
   // }
 
   // console.log(axoItems);
-  var cmdProcessor = new CmdProcessor(axoAuth, axoMe, axoItems, help, axoTest);
+  var cmdProcessor = new CmdProcessor(axoAuth, axoMe, axoItems, help);
   var readline = readLine(Object.keys(cmdProcessor.routes), cmdProcessor.process);
 })();

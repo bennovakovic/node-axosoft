@@ -264,18 +264,18 @@ module.exports = (function() {
     readline.prompt();
   };
 
-  var handleStart = function() {
-    var description = Array.prototype.slice.call(arguments);
-    if(description.length > 0){
-      console.log(description, description.join(' '));
-    }
-  };
+  // var handleStart = function() {
+  //   var description = Array.prototype.slice.call(arguments);
+  //   if(description.length > 0){
+  //     console.log(description, description.join(' '));
+  //   }
+  // };
 
   var handlers = {
     '/f' : handleWorkOnFeature.bind(this),
     '/b' : handleWorkOnBug.bind(this),
     '/timer' : handleTimerRequest.bind(this),
-    '/start' : handleStart.bind(this),
+    // '/start' : handleStart.bind(this),
     '/finish' : handleFinish.bind(this),
     '/log' : handleLog.bind(this),
   };

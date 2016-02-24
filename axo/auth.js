@@ -35,7 +35,7 @@ module.exports = (function() {
       response_type : 'code',
       client_id : settings.account.axosoft_client_id,
       // redirect_uri : 'https://bmn.name/axo/token-exchange,
-      redirect_uri : 'http://127.0.0.1:11180/axo/token-exchange',
+      redirect_uri : 'https://bmn.name/axo/token-exchange',
       scope : 'read write',
       expiring : false
 
