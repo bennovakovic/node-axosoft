@@ -73,6 +73,11 @@ module.exports = (function() {
     //   console.log(response.data[1].workflow_steps);
     // })
   };
+  var getChore = function(id, callback) {
+    request.get('/tasks/' + id, {}, function(err, data) {
+      callback(err, data.data);
+    })
+  };
 
   var getDateInFormat = function(d) {
     if (!d) {
@@ -170,7 +175,7 @@ module.exports = (function() {
         console.log('#' + currentTicket.id + ' ' + currentTicket.name);
         console.log('#################');
         console.log('Now logging time...');
-        displayNotification('Working on #' + currentTicket.id, currentTicket.name);
+        displayNotification('Working on Feature #' + currentTicket.id, currentTicket.name);
         readline.setPrompt('Feature #' + currentTicket.id + ' > ');
         readline.prompt();
       })
@@ -192,8 +197,31 @@ module.exports = (function() {
         console.log('#' + currentTicket.id + ' ' + currentTicket.name);
         console.log('#################');
         console.log('Now logging time...');
-        displayNotification('Working on #' + currentTicket.id, currentTicket.name);
+        displayNotification('Working on Bug #' + currentTicket.id, currentTicket.name);
         readline.setPrompt('Bug #' + currentTicket.id + ' > ');
+        readline.prompt();
+      })
+    })
+  };
+
+
+  var handleWorkOnChore = function(id) {
+    if(currentTicket) {
+      console.log('You are already working on a ticket, /finish on that first.');
+      readline.prompt();
+      return
+    }
+    getMe(function(err, data) {
+      getChore(id, function(err, data) {
+        currentTicket = data;
+        startTime = Math.round((new Date()).getTime() / 1000);
+        console.log('#################');
+        console.log('Requested Chore:');
+        console.log('#' + currentTicket.id + ' ' + currentTicket.name);
+        console.log('#################');
+        console.log('Now logging time...');
+        displayNotification('Working on Chore #' + currentTicket.id, currentTicket.name);
+        readline.setPrompt('Chore #' + currentTicket.id + ' > ');
         readline.prompt();
       })
     })
@@ -274,6 +302,7 @@ module.exports = (function() {
   var handlers = {
     '/f' : handleWorkOnFeature.bind(this),
     '/b' : handleWorkOnBug.bind(this),
+    '/c' : handleWorkOnChore.bind(this),
     '/timer' : handleTimerRequest.bind(this),
     // '/start' : handleStart.bind(this),
     '/finish' : handleFinish.bind(this),
