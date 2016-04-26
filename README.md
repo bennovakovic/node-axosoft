@@ -89,3 +89,28 @@ If you want to see the current timer since you ran `/f`, `/b` or `/c`:
 /timer
 ```
 
+## Example
+```
+> /f 123
+#################
+Requested Feature:
+#123 Social connection buttons should be disabled when in working state
+#################
+Now logging time...
+
+<time passes>
+
+Feature #123 > /log ben just testing
+Log:  0.45 mins
+Time logged...
+
+<time passes>
+
+Feature #123 > /finish
+Log:  0.3 mins
+Time logged...
+#################
+Finished working on #123
+#################
+> 
+```
